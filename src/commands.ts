@@ -1,4 +1,5 @@
 import { Context } from "koishi";
+import { tasks } from "./services";
 
 export default function (ctx: Context) {
   ctx
@@ -130,9 +131,12 @@ export default function (ctx: Context) {
         return;
       }
 
-      const [quiz] = await ctx.model.get("quizzes", id);
+      const [quiz] = await ctx.model.get("quizzes", {
+        id,
+        channelId: session?.channelId,
+      });
 
-      if (!quiz || quiz.channelId !== session?.channelId) {
+      if (!quiz) {
         session?.send("该题目不存在");
         return;
       }
@@ -180,5 +184,29 @@ export default function (ctx: Context) {
         .join("\n");
 
       session?.send(`最近答题记录:\n${quizList}`);
+    });
+
+  ctx
+    .command("quiz.approve <id:number> 手动通过一个答题", { authority: 2 })
+    .action(async ({ session }, id) => {
+      if (!session?.channelId) {
+        session?.send("该指令只能在群聊内使用");
+        return;
+      }
+
+      const log = tasks.get(id);
+      const [quiz] = await ctx.model.get("quizzes", {
+        id: log?.quizId,
+        channelId: session?.channelId,
+      });
+      if (!log || !quiz) {
+        session?.send("该答题记录不存在");
+        return;
+      }
+
+      log.status = "accepted";
+      await log.$update();
+
+      session?.send("手动通过成功");
     });
 }
