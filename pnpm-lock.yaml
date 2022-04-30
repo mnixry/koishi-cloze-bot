@@ -22,11 +22,13 @@ specifiers:
   eslint-config-prettier: ^8.5.0
   eslint-plugin-prettier: ^4.0.0
   koishi: ^4.6.1
+  koishi-plugin-sentry: ^2.0.1
   mustache: ^4.2.0
   nodemon: ^2.0.16
   prettier: ^2.6.2
   prettier-plugin-organize-imports: ^2.3.4
   regenerator-runtime: ^0.13.9
+  schemastery: ^3.3.3
   ts-node: ^10.7.0
   typescript: ^4.6.4
 
@@ -45,7 +47,9 @@ dependencies:
   cosmotype: 1.0.9
   dotenv: 10.0.0
   koishi: 4.6.1
+  koishi-plugin-sentry: 2.0.1_3c678771a9a8c579b317c5581c85d0a5
   mustache: 4.2.0
+  schemastery: 3.3.3
 
 devDependencies:
   '@types/mustache': 4.1.2
@@ -313,6 +317,64 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
     dev: true
+
+  /@sentry/core/6.19.7:
+    resolution: {integrity: sha512-tOfZ/umqB2AcHPGbIrsFLcvApdTm9ggpi/kQZFkej7kMphjT+SGBiQfYtjyg9jcRW+ilAR4JXC9BGKsdEQ+8Vw==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/hub': 6.19.7
+      '@sentry/minimal': 6.19.7
+      '@sentry/types': 6.19.7
+      '@sentry/utils': 6.19.7
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/hub/6.19.7:
+    resolution: {integrity: sha512-y3OtbYFAqKHCWezF0EGGr5lcyI2KbaXW2Ik7Xp8Mu9TxbSTuwTe4rTntwg8ngPjUQU3SUHzgjqVB8qjiGqFXCA==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/types': 6.19.7
+      '@sentry/utils': 6.19.7
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/minimal/6.19.7:
+    resolution: {integrity: sha512-wcYmSJOdvk6VAPx8IcmZgN08XTXRwRtB1aOLZm+MVHjIZIhHoBGZJYTVQS/BWjldsamj2cX3YGbGXNunaCfYJQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/hub': 6.19.7
+      '@sentry/types': 6.19.7
+      tslib: 1.14.1
+    dev: false
+
+  /@sentry/node/6.19.7:
+    resolution: {integrity: sha512-gtmRC4dAXKODMpHXKfrkfvyBL3cI8y64vEi3fDD046uqYcrWdgoQsffuBbxMAizc6Ez1ia+f0Flue6p15Qaltg==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/core': 6.19.7
+      '@sentry/hub': 6.19.7
+      '@sentry/types': 6.19.7
+      '@sentry/utils': 6.19.7
+      cookie: 0.4.2
+      https-proxy-agent: 5.0.1
+      lru_map: 0.3.3
+      tslib: 1.14.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@sentry/types/6.19.7:
+    resolution: {integrity: sha512-jH84pDYE+hHIbVnab3Hr+ZXr1v8QABfhx39KknxqKWr2l0oEItzepV0URvbEhB446lk/S/59230dlUUIBGsXbg==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /@sentry/utils/6.19.7:
+    resolution: {integrity: sha512-z95ECmE3i9pbWoXQrD/7PgkBAzJYR+iXtPuTkpBjDKs86O3mT+PXOT3BAn79w2wkn7/i3vOGD2xVr1uiMl26dA==}
+    engines: {node: '>=6'}
+    dependencies:
+      '@sentry/types': 6.19.7
+      tslib: 1.14.1
+    dev: false
 
   /@sindresorhus/is/0.14.0:
     resolution: {integrity: sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==}
@@ -933,6 +995,11 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
+  /cookie/0.4.2:
+    resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
   /cookies/0.8.0:
     resolution: {integrity: sha512-8aPsApQfebXnuI+537McwYsDtjVxGm8gTIzQI3FDW6t5t/DAhERxtnbEPN/8RX+uZthoz4eCOgloXaE5cYyNow==}
     engines: {node: '>= 0.8'}
@@ -951,6 +1018,16 @@ packages:
 
   /cosmokit/1.1.2:
     resolution: {integrity: sha512-cSNrcyxZ3GT+tjSlUzWIzMiK7Wndq1Nm/2tlRhT65RXltSIcH5zaHdmnz1TnIhLuOViaO9qfSdnRPzxNkxMv0g==}
+    dev: false
+
+  /cosmotype-decorators/2.0.5_cosmotype@1.0.9:
+    resolution: {integrity: sha512-Y+OXs405l6T+IUk59CtvG3y8LU7CCTITKWLfafEm8wVUAJFMTJGKh63HtZmmq9rKl/qM3RuHG12DZA9SZvsrAg==}
+    peerDependencies:
+      cosmotype: ^1.0.3
+    dependencies:
+      cosmotype: 1.0.9
+      lodash: 4.17.21
+      typed-reflector: 1.0.10
     dev: false
 
   /cosmotype/1.0.9:
@@ -1918,6 +1995,53 @@ packages:
       - supports-color
     dev: false
 
+  /koishi-decorators/2.0.0_koishi@4.6.1:
+    resolution: {integrity: sha512-YAbjOLdBxJU0DnBM7vqH+UNfSqMrejlcTEc+m++ZvuMbkUA4tHZ5iciwJFV2iPZUKSZy7GbmImNbXDmmjowF5w==}
+    peerDependencies:
+      koishi: ^4.6.0
+    dependencies:
+      '@types/koa': 2.13.4
+      '@types/koa__router': 8.0.11
+      koishi: 4.6.1
+      lodash: 4.17.21
+      reflect-metadata: 0.1.13
+      typed-reflector: 1.0.10
+    dev: false
+
+  /koishi-plugin-sentry/2.0.1_3c678771a9a8c579b317c5581c85d0a5:
+    resolution: {integrity: sha512-7ZH26JRV6cPDILJ2JqKYqc84HSEyd53neRglSVNqZBvK55a4vQKEpSsayVsA2Qfe4BIgvKDq5XozAAdisRZXfA==}
+    peerDependencies:
+      koishi: ^4.6.0
+    dependencies:
+      '@sentry/node': 6.19.7
+      koishi: 4.6.1
+      koishi-thirdeye: 10.0.5_3c678771a9a8c579b317c5581c85d0a5
+    transitivePeerDependencies:
+      - cosmotype
+      - schemastery
+      - supports-color
+    dev: false
+
+  /koishi-thirdeye/10.0.5_3c678771a9a8c579b317c5581c85d0a5:
+    resolution: {integrity: sha512-GzPNyJCnUNklHefi0vc0nArV+dEh1QuTddom9MQ6Sawa6nbjbnZNWKFY08eQxNR6CR87tYK93WtO+URwcBbEew==}
+    peerDependencies:
+      koishi: ^4.6.0
+      schemastery: ^3.1.0
+    dependencies:
+      '@types/koa': 2.13.4
+      '@types/koa__router': 8.0.11
+      cosmotype-decorators: 2.0.5_cosmotype@1.0.9
+      koishi: 4.6.1
+      koishi-decorators: 2.0.0_koishi@4.6.1
+      lodash: 4.17.21
+      reflect-metadata: 0.1.13
+      schemastery: 3.3.3
+      schemastery-gen: 3.1.4_schemastery@3.3.3
+      typed-reflector: 1.0.10
+    transitivePeerDependencies:
+      - cosmotype
+    dev: false
+
   /koishi/4.6.1:
     resolution: {integrity: sha512-9NtcXrIKLN8AG9zEf3GzweSiHQubew0AWfjaci0grIxy760T77D8iLVsDbVhzmGSnc26WOR2q3CMFdRmE2igVA==}
     engines: {node: '>=12.0.0'}
@@ -1970,6 +2094,10 @@ packages:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
 
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
+
   /lowercase-keys/1.0.1:
     resolution: {integrity: sha512-G2Lj61tXDnVFFOi8VZds+SoQjtQC3dgokKdDG2mTm1tx4m50NUHBOZSBwQQHyy0V12A0JTG4icfZQH+xPyh8VA==}
     engines: {node: '>=0.10.0'}
@@ -1991,6 +2119,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       yallist: 4.0.0
+
+  /lru_map/0.3.3:
+    resolution: {integrity: sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==}
+    dev: false
 
   /make-dir/3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
@@ -2477,6 +2609,10 @@ packages:
     dependencies:
       picomatch: 2.3.1
 
+  /reflect-metadata/0.1.13:
+    resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
+    dev: false
+
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
     dev: true
@@ -2546,6 +2682,17 @@ packages:
 
   /safer-buffer/2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+    dev: false
+
+  /schemastery-gen/3.1.4_schemastery@3.3.3:
+    resolution: {integrity: sha512-zhM5A2p/SdPKe8ouObCYSOA3k5I1CpbOfSvv8DWp7kCbVnSgfOMSBCB4Yue3/D81+MAE2re93nSt7k/Tolz3mQ==}
+    peerDependencies:
+      schemastery: ^3.3.2
+    dependencies:
+      lodash: 4.17.21
+      reflect-metadata: 0.1.13
+      schemastery: 3.3.3
+      typed-reflector: 1.0.10
     dev: false
 
   /schemastery/3.3.3:
@@ -2860,7 +3007,6 @@ packages:
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-    dev: true
 
   /tslib/2.4.0:
     resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
@@ -2912,6 +3058,12 @@ packages:
     dependencies:
       media-typer: 0.3.0
       mime-types: 2.1.35
+    dev: false
+
+  /typed-reflector/1.0.10:
+    resolution: {integrity: sha512-AqjdFGE/DGzbyFHTJ/xDY6mPHAJJKiVhn3vQ01sXz5eEJvY82jOllPGanFJ/Bo6ObPbLWa2fAZW19kcybiFPNA==}
+    dependencies:
+      reflect-metadata: 0.1.13
     dev: false
 
   /typedarray-to-buffer/3.1.5:
@@ -3012,7 +3164,7 @@ packages:
     dev: false
 
   /which-pm-runs/1.1.0:
-    resolution: {integrity: sha512-SIqZVnlKPt/s5tOArosKIvGC1bwpoj6w5Q3SmimaVOOU8YFsjuMvvZO1MbKCbO8D6VV0XkROC8jrXJNYa1xBDA==, tarball: which-pm-runs/-/which-pm-runs-1.0.0.tgz}
+    resolution: {integrity: sha512-SIqZVnlKPt/s5tOArosKIvGC1bwpoj6w5Q3SmimaVOOU8YFsjuMvvZO1MbKCbO8D6VV0XkROC8jrXJNYa1xBDA==, tarball: which-pm-runs/-/which-pm-runs-1.1.0.tgz}
     deprecated: '[WARNING] Use 1.0.0 instead of 1.1.0, reason: https://github.com/zkochan/packages/commit/e7af82f03f1afe6086312d80a0fa47eb8d1c6bff'
     dev: false
 
