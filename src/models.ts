@@ -29,7 +29,7 @@ export interface QuizLogs {
   quizData: string[];
   quizAnswer: number;
   userId: string;
-  status: "failed" | "accepted" | "waiting";
+  status: "failed" | "accepted" | "waiting" | "timeout";
   time: Date;
 }
 

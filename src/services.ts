@@ -47,7 +47,7 @@ export default function (ctx: Context) {
     if (
       latestLog &&
       latestLog.time.getTime() + channel.rejoinDelay > Date.now() &&
-      latestLog.status === "failed"
+      (latestLog.status === "failed" || latestLog.status === "timeout")
     ) {
       await session.send(segment.at(session.userId!) + IN_JOIN_DELAY_KICK_MSG);
       await session.onebot?.setGroupKick(session.channelId!, session.userId!);
@@ -57,7 +57,7 @@ export default function (ctx: Context) {
       segment.at(session.userId!) + (channel.welcomeMsg ?? DEFAULT_WELCOME_MSG),
     );
 
-    for (let retries = 0; retries <= channel.quizRetries; retries++) {
+    for (let retries = 0; retries <= channel.quizRetries - 1; retries++) {
       const quiz = choice(quizzes),
         choices = shuffle([quiz.correct, ...quiz.wrongs]),
         [answerIndex] = choices
@@ -119,6 +119,29 @@ export default function (ctx: Context) {
   });
 
   ctx.on("guild-deleted", async ({ channelId }) => {
-    await ctx.database.remove("quizzes", { channelId });
+    const quizIds = await ctx.model
+      .get("quizzes", { channelId })
+      .then((v) => v.map((v) => v.id));
+    await ctx.model.remove("quizzes", { id: quizIds });
+    await ctx.model.remove("quizLogs", { quizId: quizIds });
   });
+
+  setInterval(async () => {
+    const quizzes = await ctx.model.get("quizzes", {});
+    const channels = await ctx.model
+      .get("channel", { id: quizzes.map((result) => result.channelId) })
+      .then((v) => Object.fromEntries(v.map((v) => [v.id, v])));
+
+    for (const quiz of quizzes) {
+      const logs = await ctx.model.get("quizLogs", {
+          quizId: quiz.id,
+          status: "waiting",
+        }),
+        channel = channels[quiz.channelId];
+
+      for (const log of logs)
+        if (log.time.getTime() + channel.quizTimeout < Date.now())
+          await ctx.model.set("quizLogs", log.id, { status: "timeout" });
+    }
+  }, 5 * 60 * 1000);
 }
