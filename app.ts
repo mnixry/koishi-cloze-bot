@@ -9,6 +9,7 @@ import console from "@koishijs/plugin-console";
 import insight from "@koishijs/plugin-insight";
 import dataview from "@koishijs/plugin-dataview";
 import * as chat from "@koishijs/plugin-chat";
+import sentry from "koishi-plugin-sentry";
 
 import plugin from "./src";
 
@@ -43,7 +44,8 @@ app
   .plugin(console)
   .plugin(dataview)
   .plugin(insight)
-  .plugin(chat);
+  .plugin(chat)
+  .plugin(sentry, { dsn: process.env.SENTRY_DSN, logAsBreadcrumb: true });
 
 app.plugin(plugin);
 
