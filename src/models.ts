@@ -47,10 +47,6 @@ export default function (ctx: Context) {
     {
       autoInc: true,
       primary: "id",
-      foreign: {
-        channelId: ["channel", "id"],
-        platform: ["channel", "platform"],
-      },
     },
   );
 
@@ -68,9 +64,6 @@ export default function (ctx: Context) {
     {
       autoInc: true,
       primary: "id",
-      foreign: {
-        quizId: ["quizzes", "id"],
-      },
     },
   );
 
