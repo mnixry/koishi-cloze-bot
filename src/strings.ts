@@ -1,11 +1,12 @@
-export const DEFAULT_WELCOME_MSG =
-  "欢迎加入群聊, 请回答以下验证问题 (回复选项前序号即可):\n" as const;
+export const DEFAULT_WELCOME_MSG = "欢迎加入群聊!" as const;
 
-export const WRONG_ANSWER_MSG =
-  "对不起, 您输入的答案错误, 请重新回答以下问题:" as const;
+export const COMPLETE_QUIZ_HINT_MSG =
+  "请回复选项前序号来回答下列问题:\n" as const;
+
+export const WRONG_ANSWER_MSG = "对不起, 您输入的答案错误" as const;
 
 export const WRONG_ANSWER_FORMAT_MSG =
-  "对不起, 您输入的答案格式错误, 可能是您还未完成入群验证问题, 请回答以下问题 (回复选项前序号即可):\n" as const;
+  "对不起, 您输入的答案格式错误, 可能是您还未完成入群验证问题" as const;
 
 export const CORRECT_ANSWER_MSG =
   "验证问题正确, 入群验证已通过, 感谢支持" as const;

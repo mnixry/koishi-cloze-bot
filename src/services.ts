@@ -1,5 +1,7 @@
-import { Context, segment } from "koishi";
+import { Context, observe, segment, type Observed } from "koishi";
+import type { QuizLogs } from "./models";
 import {
+  COMPLETE_QUIZ_HINT_MSG,
   CORRECT_ANSWER_MSG,
   DEFAULT_WELCOME_MSG,
   IN_JOIN_DELAY_KICK_MSG,
@@ -28,14 +30,17 @@ function shuffle<T extends unknown[]>(array: T): T {
   return array;
 }
 
+export const tasks = new Map<number, Observed<QuizLogs>>();
+
 export default function (ctx: Context) {
   ctx.on("guild-member-added", async (session) => {
     const channel = await ctx.database.getChannel(
       session.platform!,
       session.channelId!,
     );
+
     const quizzes = await ctx.database.get("quizzes", {
-      channelId: session.channelId,
+      channelId: channel.id,
     });
     if (quizzes.length <= 0) return;
 
@@ -51,71 +56,111 @@ export default function (ctx: Context) {
     ) {
       await session.send(segment.at(session.userId!) + IN_JOIN_DELAY_KICK_MSG);
       await session.onebot?.setGroupKick(session.channelId!, session.userId!);
+      return;
     }
 
     await session.send(
       segment.at(session.userId!) + (channel.welcomeMsg ?? DEFAULT_WELCOME_MSG),
     );
 
-    for (let retries = 0; retries <= channel.quizRetries - 1; retries++) {
-      const quiz = choice(quizzes),
-        choices = shuffle([quiz.correct, ...quiz.wrongs]),
-        [answerIndex] = choices
-          .map((v, i) => [i, v] as const)
-          .find(([, v]) => v === quiz.correct)!;
-
-      const { id: logId } = await ctx.database.create("quizLogs", {
-        quizId: quiz.id,
-        quizData: choices,
-        quizAnswer: answerIndex,
+    const log = observe(
+      await ctx.database.create("quizLogs", {
         userId: session.userId,
         status: "waiting",
         time: new Date(),
-      });
-      await session.send(choices.map((v, i) => `${i + 1}. ${v}`).join("\n"));
+      }),
+      async (diff) => {
+        console.log("update", diff);
+        await ctx.database.set("quizLogs", log.id, {
+          ...diff,
+          time: new Date(),
+        });
+        switch (diff.status) {
+          case "accepted":
+            await session.send(
+              segment.at(session.userId!) + CORRECT_ANSWER_MSG,
+            );
+            clearTimeout(timer);
+            break;
+          case "failed":
+            await session.send(
+              segment.at(session.userId!) + MAX_RETRIES_EXCEED_KICK_MSG,
+            );
+            await session.onebot?.setGroupKick(
+              channel.id,
+              session.onebot.user_id!,
+            );
+            break;
+          case "timeout":
+            await session.send(segment.at(session.userId!) + TIMEOUT_KICK_MSG);
+            await session.onebot?.setGroupKick(
+              channel.id,
+              session.onebot.user_id!,
+            );
+            break;
+        }
+      },
+    );
+    const timer = setTimeout(
+      () => (log.status = "timeout"),
+      channel.quizTimeout,
+    );
+
+    tasks.set(log.id, log);
+    setTimeout(
+      () => tasks.delete(log.id),
+      channel.quizTimeout + channel.rejoinDelay,
+    );
+
+    let retries = 0;
+
+    for (; retries < channel.quizRetries; retries++) {
+      const quiz = choice(quizzes),
+        choices = shuffle([quiz.correct, ...quiz.wrongs]),
+        [answer] = choices
+          .map((v, i) => [i, v] as const)
+          .find(([, v]) => v === quiz.correct)!;
+
+      [log.quizId, log.quizData, log.quizAnswer] = [quiz.id, choices, answer];
+
+      await session.send(
+        segment.at(session.userId!) +
+          `(${log.id})` +
+          COMPLETE_QUIZ_HINT_MSG +
+          choices.map((v, i) => `${i + 1}. ${v}`).join("\n"),
+      );
 
       const userAnswer = await session
         .prompt(channel.quizTimeout)
         .catch(() => undefined);
 
+      if (log.status === "accepted") break; // if accepted outer, break loop
+
       if (userAnswer === undefined) {
-        await ctx.database.set("quizLogs", logId, {
-          status: "failed",
-          time: new Date(),
-        });
-        await session.send(segment.at(session.userId!) + TIMEOUT_KICK_MSG);
-        await session.onebot?.setGroupKick(session.channelId!, session.userId!); //TODO: use universal bot API here
+        log.status = "timeout";
         break;
       }
 
-      if (!Number.isInteger(+userAnswer) || +userAnswer >= choices.length) {
+      if (!Number.isInteger(+userAnswer) || +userAnswer > choices.length) {
         await session.send(
           segment.at(session.userId!) + WRONG_ANSWER_FORMAT_MSG,
         );
-      } else {
-        if (+userAnswer - 1 === answerIndex) {
-          await ctx.database.set("quizLogs", logId, {
-            status: "accepted",
-            time: new Date(),
-          });
-          await session.send(segment.at(session.userId!) + CORRECT_ANSWER_MSG);
-          break;
-        } else {
-          await ctx.database.set("quizLogs", logId, {
-            status: "failed",
-            time: new Date(),
-          });
-          await session.send(segment.at(session.userId!) + WRONG_ANSWER_MSG);
-        }
+        continue;
       }
 
-      if (retries >= channel.quizRetries) {
-        await session.send(
-          segment.at(session.userId!) + MAX_RETRIES_EXCEED_KICK_MSG,
-        );
-        await session.onebot?.setGroupKick(session.channelId!, session.userId!); //TODO: use universal bot API here
+      if (+userAnswer - 1 === answer) {
+        log.status = "accepted";
+        break;
+      } else {
+        await session.send(segment.at(session.userId!) + WRONG_ANSWER_MSG);
       }
     }
+
+    if (retries >= channel.quizRetries) {
+      log.status = "failed";
+    }
+
+    await log.$update();
   });
 
   ctx.on("guild-deleted", async ({ channelId }) => {
@@ -125,23 +170,4 @@ export default function (ctx: Context) {
     await ctx.model.remove("quizzes", { id: quizIds });
     await ctx.model.remove("quizLogs", { quizId: quizIds });
   });
-
-  setInterval(async () => {
-    const quizzes = await ctx.model.get("quizzes", {});
-    const channels = await ctx.model
-      .get("channel", { id: quizzes.map((result) => result.channelId) })
-      .then((v) => Object.fromEntries(v.map((v) => [v.id, v])));
-
-    for (const quiz of quizzes) {
-      const logs = await ctx.model.get("quizLogs", {
-          quizId: quiz.id,
-          status: "waiting",
-        }),
-        channel = channels[quiz.channelId];
-
-      for (const log of logs)
-        if (log.time.getTime() + channel.quizTimeout < Date.now())
-          await ctx.model.set("quizLogs", log.id, { status: "timeout" });
-    }
-  }, 5 * 60 * 1000);
 }
