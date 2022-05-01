@@ -142,6 +142,7 @@ export default function (ctx: Context) {
       }
 
       await ctx.model.remove("quizzes", quiz.id);
+      await ctx.model.remove("quizLogs", { quizId: quiz.id });
 
       session?.send("删除成功");
     });

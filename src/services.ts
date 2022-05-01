@@ -125,8 +125,8 @@ export default function (ctx: Context) {
 
       await session.send(
         segment.at(session.userId!) +
-          `(${log.id})` +
-          COMPLETE_QUIZ_HINT_MSG +
+          `(${log.id})${COMPLETE_QUIZ_HINT_MSG}` +
+          (quiz.question + "\n") +
           choices.map((v, i) => `${i + 1}. ${v}`).join("\n"),
       );
 
