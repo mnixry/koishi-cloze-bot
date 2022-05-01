@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@koishijs/cli': ^4.6.1
   '@koishijs/core': ^4.6.1
-  '@koishijs/plugin-adapter-onebot': ^4.2.0
+  '@koishijs/plugin-adapter-onebot': ^4.2.1
   '@koishijs/plugin-chat': ^1.3.0
   '@koishijs/plugin-console': ^3.2.8
   '@koishijs/plugin-database-sqlite': ^1.2.2
@@ -35,7 +35,7 @@ specifiers:
 dependencies:
   '@koishijs/cli': 4.6.1_koishi@4.6.1
   '@koishijs/core': 4.6.1
-  '@koishijs/plugin-adapter-onebot': 4.2.0_koishi@4.6.1
+  '@koishijs/plugin-adapter-onebot': 4.2.1_koishi@4.6.1
   '@koishijs/plugin-chat': 1.3.0_koishi@4.6.1
   '@koishijs/plugin-console': 3.2.8_koishi@4.6.1
   '@koishijs/plugin-database-sqlite': 1.2.2_cosmotype@1.0.9+koishi@4.6.1
@@ -188,10 +188,10 @@ packages:
       semver: 7.3.7
     dev: false
 
-  /@koishijs/plugin-adapter-onebot/4.2.0_koishi@4.6.1:
-    resolution: {integrity: sha512-G1ybTbjAK6ET0yCBCTj0v4wRwmH3ZXqyeU3MU/x74SPu4YogQiN62eD7/iUGwAUqlhYyZK/ykWIvxOlRsrdekA==}
+  /@koishijs/plugin-adapter-onebot/4.2.1_koishi@4.6.1:
+    resolution: {integrity: sha512-1MZYNq9XK6ITDMDWkrm7ou4ZNB5JVulMjQwhey0XPbTSboxihJpKeBY6oi7eDInUbsi+mJ0x5yPcxMrwvT0xjQ==}
     peerDependencies:
-      koishi: ^4.6.0
+      koishi: ^4.6.1
     dependencies:
       koishi: 4.6.1
       qface: 1.2.0
@@ -3164,7 +3164,7 @@ packages:
     dev: false
 
   /which-pm-runs/1.1.0:
-    resolution: {integrity: sha512-SIqZVnlKPt/s5tOArosKIvGC1bwpoj6w5Q3SmimaVOOU8YFsjuMvvZO1MbKCbO8D6VV0XkROC8jrXJNYa1xBDA==, tarball: which-pm-runs/-/which-pm-runs-1.1.0.tgz}
+    resolution: {integrity: sha512-SIqZVnlKPt/s5tOArosKIvGC1bwpoj6w5Q3SmimaVOOU8YFsjuMvvZO1MbKCbO8D6VV0XkROC8jrXJNYa1xBDA==, tarball: which-pm-runs/-/which-pm-runs-1.0.0.tgz}
     deprecated: '[WARNING] Use 1.0.0 instead of 1.1.0, reason: https://github.com/zkochan/packages/commit/e7af82f03f1afe6086312d80a0fa47eb8d1c6bff'
     dev: false
 
